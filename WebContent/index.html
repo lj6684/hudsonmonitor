@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="refresh" content="60"/>
+<title>Hudson Monitor</title>
+<style type="text/css">
+#loading {
+	position: absolute;
+	width: 300px;
+	top: 0px;
+	left: 50%;
+	margin-left: 150px;
+	text-align: center;
+	padding: 7px 0 0 0 ;
+	font: blod 12px;
+}
+
+.pane {
+	height: 120px;
+	width: 180px;
+	float: left;
+	background: blue;
+	color: white;
+	margin-left: 5px;
+}
+
+.title {
+	height: 60px;
+	width: auto;
+	line-height: 80px;
+	text-align: center;
+	font-size: 18px;
+	font-family: 微软雅黑;
+	font-weight: bold;
+}
+
+.time {
+	height: 60px;
+	width: auto;
+	line-height: 30px;
+	text-align: center;
+	font-size: 11px;
+	font-family: Courier New
+}
+</style>
+<script language="javascript" type="text/javascript" src="jquery.js"></script>
+<script language="javascript" type="text/javascript" >
+    $(function(){
+    var html="";
+    var bgcolor="";        
+        $.ajax({
+            url:"ProxyServlet",
+            type:"get",        
+            success:function(data){
+            	$(data).find("entry").each(function(index){	            		
+	            		var title = $(this).find("title").text();
+	            		var id = title.substring(0, title.indexOf(" "));
+            		
+	            		var status = title.substring(title.indexOf("(") + 1, title.length - 1);
+	            		var published = $(this).find("published").text();           
+	            		var time = new Date(published);
+	            		
+	            		var targetItem = $("#" + id);
+	            		var targetTitle = $("#" + id +">.title");
+	            		var targetTime = $("#" + id + ">.time");
+	            		
+	            		if(status.indexOf("fail") >= 0 || status == "aborted" || status.indexOf("broken") >= 0) {
+		            		targetItem.css("background", "red");
+	            		} else if(status == "stable" || status == "back to normal") {
+		            		targetItem.css("background", "blue");
+	            		} else if(status == "unstable") {
+	            			targetItem.css("color", "black");
+	            			targetItem.css("background", "#FABD7A");
+            			} else if(status == "?") {
+	            			targetItem.css("color", "black");
+		            		targetItem.css("background", "yellow");
+	            		} else {
+	            			targetItem.css("background", "gray");
+	            		}
+	            		targetTitle.html(id);
+	            		targetTime.html(time.format("yyyy-MM-dd hh:mm:ss"));
+	            		
+	            		var href = $(this).find("link").attr("href");
+	            		var published = $(this).find("published").text();
+            	});
+            },
+            complete:function(){
+                $("#loading").hide();
+            },
+            beforeSend:function(x){    
+                //x.setRequestHeader("Content-Type", "charset=utf-8");            
+                $("#loading").show();
+            },
+            error:function(){
+                alert("error");
+            }
+        });        
+    });
+    
+    Date.prototype.format = function(format) {
+	var o = {
+	            "M+" : this.getMonth()+1, //month
+	            "d+" : this.getDate(), //day
+	            "h+" : this.getHours(), //hour
+	            "m+" : this.getMinutes(), //minute
+	            "s+" : this.getSeconds(), //second
+	            "q+" : Math.floor((this.getMonth()+3)/3), //quarter
+	            "S" : this.getMilliseconds() //millisecond
+	        }
+	    if(/(y+)/.test(format))
+	    format=format.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+	    for(var k in o)
+	    if(new RegExp("("+ k +")").test(format))
+	    format = format.replace(RegExp.$1,RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+	    return format;
+	}
+</script>
+</head>
+<body>
+<div id="loading">正在加载数据...</div>
+<table>
+	<!-- IMP -->
+	<tr>
+		<td>
+			<div id="IMP-Quick-Build" class="pane">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+			<div id="imp-build" class="pane" style="width:300px">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+			<div id="IMP5-Deploy" class="pane" style="width:300px">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+		</td>
+	</tr>
+	<!-- PMI -->
+	<tr>
+		<td>
+			<div id="PMI-Quick-Build" class="pane">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+			<div id="PMI-Build" class="pane" style="width:300px">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+			<div id="PMI-Deploy" class="pane" style="width:300px">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+			<div id="PMI-Build-Clover" class="pane" style="width:200px">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+		</td>
+	</tr>
+	<!-- PKI -->
+	<tr>
+		<td>
+			<div id="pki-ca" class="pane">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+			<div id="pki-ra" class="pane">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+			<div id="pki-km" class="pane">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+			<div id="pki-ocsp" class="pane">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+		</td>
+	</tr>
+	<!-- CMS -->
+	<tr>
+		<td>
+			<div id="jit-cmsbusiness" class="pane">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>			
+		</td>		
+	</tr>
+	<!-- Tools -->
+	<tr>
+		<td>
+			<div id="imp-agent" class="pane">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+			<div id="imp-dataCollection" class="pane">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+			<div id="imp-updatetools" class="pane">
+				<div class="title">JIT</div>
+				<div class="time">-</div>
+			</div>
+		</td>		
+	</tr>
+</table>
+</body>
+</html>
